@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/auth/auth.css">
+    <title>Авторизация</title>
+</head>
+<body>
+<div class="wrapper">
+    <a href="/" class="link__main">Вернуться на главную</a>
+    <form class="form">
+        <h1 style="text-align: center">Авторизация</h1>
+
+        <div class="input__wrapper">
+            <label for="email">Электронная почта</label>
+            <input type="email" id="email" name="email" class="input" value="sasha@gmail.com"
+                   placeholder="Введите электронную почту">
+        </div>
+
+        <div class="input__wrapper">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" class="input" value="123" placeholder="Введите пароль">
+        </div>
+
+        <div class="button__wrapper">
+            <button type="button" id="btn_reg" class="button__reg">Зарегестрироваться</button>
+            <button type="button" id="btn_auth" class="button__auth active">
+                Войти
+            </button>
+        </div>
+    </form>
+</div>
+<script src="/scripts/jquery-3.7.1.js"></script>
+<script>
+    $(document).ready(function() {
+        const ui = {
+            updateHeader: (text) => $("h1").text(text),
+            toggleActiveButton: ($active, $inactive) => {
+                $active.addClass("active");
+                $inactive.removeClass("active");
+            },
+            toggleActionWrapper: (addClass) => {
+                addClass ? $(".button__wrapper").addClass("reverse") : $(".button__wrapper").removeClass("reverse");
+            },
+            addAdditionalFields: () => {
+                if ($(".form").find(".additional").length === 0) {
+                    $("<div class=\"input__wrapper additional\"><label for=\"username\">Имя пользователя</label><input type=\"text\" id=\"username\" name=\"username\" class=\"input\" placeholder=\"Введите ваше имя\"></div>").insertAfter("#email");
+                    $("<div class=\"input__wrapper additional\"><label for=\"repeatPassword\">Повторите пароль</label><input type=\"password\" id=\"repeatPassword\" name=\"repeatPassword\" class=\"input\" placeholder=\"Повторите пароль\"></div>").insertAfter("#password");
+                }
+            },
+        };
+
+        const forms = {
+            setupAuth: () => {
+                phase = "auth";
+                $(".form").attr("action", "/auth");
+                $(".form .additional").remove();
+                ui.updateHeader("Авторизация");
+                ui.toggleActionWrapper(false);
+                ui.toggleActiveButton($("#btn_auth"), $("#btn_reg"));
+            },
+            setupReg: () => {
+                phase = "reg";
+                $(".form").attr("action", "/reg");
+                ui.updateHeader("Регистрация");
+                ui.toggleActionWrapper(true);
+                ui.toggleActiveButton($("#btn_reg"), $("#btn_auth"));
+                ui.addAdditionalFields();
+            },
+        };
+
+        const api = {
+            postRequest: (url, data, onSuccess) => {
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    data: data,
+                    success: onSuccess,
+                });
+            },
+        };
+
+        const eventHandlers = {
+            handleRegClick: () => {
+                if (phase !== "reg") {
+                    forms.setupReg();
+                } else {
+                    api.postRequest("api/registration", {
+                        username: $("#username").val(),
+                        email: $("#email").val(),
+                        password: $("#password").val(),
+                    }, (response) => {
+                        if (response.success) {
+                            window.location.replace("/");
+                        }
+                    });
+                }
+            },
+            handleAuthClick: () => {
+                if (phase !== "auth") {
+                    forms.setupAuth();
+                } else {
+                    api.postRequest("api/auth", {
+                        email: $("#email").val(),
+                        password: $("#password").val(),
+                    }, (response) => {
+                        if (response.success) {
+                            window.location.replace("/");
+                        }
+                    });
+                }
+            },
+        };
+
+        $("#btn_reg").click(eventHandlers.handleRegClick);
+        $("#btn_auth").click(eventHandlers.handleAuthClick);
+
+        forms.setupAuth();
+    });
+
+</script>
+
+</body>
+</html>

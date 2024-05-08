@@ -1,0 +1,68 @@
+@import "../reset.css";
+
+
+body {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "slnt" 0;
+}
+
+.wrapper {
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.link__main {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    padding: 20px 22px;
+
+    width: 40vw;
+
+    border-radius: 4px;
+    box-shadow: 0 4px 8px 0 rgba(32, 32, 32, 0.5);
+}
+
+.input__wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input__wrapper .input {
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+.button__wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button__wrapper .active {
+    padding: 4px 8px;
+
+    border: 1px solid rgba(32, 32, 32, 1);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.reverse {
+    flex-direction: row-reverse;
+}

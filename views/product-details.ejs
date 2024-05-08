@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/css/product-details.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <title>
+        <%= product.name; %>
+    </title>
+</head>
+<body>
+<div class="wrapper">
+    <%- include("components/header", { loggedIn }); %>
+    <div class="content">
+        <div class="images">
+            <swiper-container style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff"
+                              class="mySwiper" thumbs-swiper=".mySwiper2" space-between="10" navigation="true">
+                <% images.forEach(image=> { %>
+                    <swiper-slide>
+                        <img src="<%= `/${image.image_path}`; %>"
+                             alt="Image big preview <%= image.id; %>" />
+                    </swiper-slide>
+                <% }); %>
+            </swiper-container>
+
+            <swiper-container class="mySwiper2" space-between="2" slides-per-view="4"
+                              watch-slides-progress="true">
+                <% images.forEach(image=> { %>
+                    <swiper-slide>
+                        <img src="<%= `/${image.image_path}`; %>"
+                             alt="Image small preview <%= image.id; %>" />
+                    </swiper-slide>
+                <% }); %>
+            </swiper-container>
+        </div>
+        <div class="information">
+
+            <div class="information__name">
+                <h1 class="information__title"><%= product.name; %></h1>
+                <h2 class="information__brandName"><%= product.brand_name; %></h2>
+            </div>
+
+
+            <div class="information__price">
+                <%= product.price.toLocaleString('ru-RU', {
+                    style: 'currency',
+                    currency: 'RUB',
+                    maximumFractionDigits: 0
+                }); %>
+            </div>
+
+            <div class="sizes">
+                Доступные размеры
+                <div class="sizes__grid">
+                    <% sizes?.sort((a, b) => a.name - b.name).forEach(size => { %>
+                        <button class="sizes__item" data-sizeid="<%= size.id %>">
+                            <%= formatSize(size.name); %>
+                        </button>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
+<script src="/scripts/jquery-3.7.1.js"></script>
+<script>
+    $(document).ready(function() {
+        $(".sizes__grid").on("click", ".sizes__item", function() {
+            const sizeId = $(this).data("sizeid");
+
+            if (sizeId) {
+                $.ajax({
+                    url: "/api/cart/add",
+                    method: "POST",
+                    data: {
+                        sizeId,
+                    },
+                    success: function(response) {
+                        console.log(response);
+                    },
+                });
+            }
+        });
+    });
+</script>
+</body>
+
+</html>

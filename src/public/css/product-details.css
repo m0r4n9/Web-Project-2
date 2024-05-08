@@ -1,0 +1,103 @@
+@import "reset.css";
+@import "./components/header.css";
+
+.content {
+    display: flex;
+    justify-content: center;
+
+    padding: 50px 32px;
+
+    gap: 32px;
+    width: 100vw;
+}
+
+.images {
+    position: relative;
+    width: 50%;
+}
+
+.information {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 30px;
+}
+
+.information__name {
+    text-align: center;
+}
+
+.information__brandName {
+    margin-top: 12px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.information__price {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.sizes {
+    text-align: center;
+}
+
+
+.sizes__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.sizes__item {
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 4px 12px;
+
+    cursor: pointer;
+
+    transition: opacity 0.2s ease;
+}
+
+.sizes__item:hover {
+    opacity: 0.6;
+}
+
+swiper-container {
+    width: 100%;
+}
+
+swiper-slide {
+    /* text-align: center; */
+    font-size: 18px;
+    background: #fff;
+}
+
+swiper-slide img {
+    width: 100%;
+    object-fit: cover;
+}
+
+
+swiper-slide {
+    background-size: cover;
+    background-position: center;
+} 
+
+.mySwiper2 .swiper-slide-thumb-active {
+    opacity: 1;
+}
+
+.mySwiper2 {
+    height: 25%;
+    padding: 10px 0;
+}
+
+.mySwiper2 swiper-slide {
+    width: 20%;
+    opacity: 0.4;
+}

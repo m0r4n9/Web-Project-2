@@ -1,0 +1,74 @@
+@import "reset.css";
+@import "./components/header.css";
+
+.content {
+    display: flex;
+    justify-content: center;
+
+    padding-top: 40px;
+}
+
+.profile {
+    display: flex;
+    flex-direction: column;
+
+    width: 30vw;
+
+    gap: 24px;
+}
+
+.profile__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.profile__field input {
+    border: 1px solid black;
+    padding: 10px 16px;
+    border-radius: 10px;
+
+    font-size: 18px;
+}
+
+.error {
+    border-color: red !important;
+}
+
+.profile__field input:disabled {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.actions__edit {
+    display: flex;
+    justify-content: space-between;
+}
+
+.actions__edit button {
+    padding: 6px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-style: solid;
+
+    transition: background-color 0.3s ease, color 0.2s ease;
+}
+
+.actions__edit button:hover {
+    color: white;
+}
+
+.actions__cancel {
+    border-color: red;
+}
+
+.actions__cancel:hover {
+    background-color: red;
+}
+
+.actions__save {
+    border-color: green;
+}
+
+.actions__save:hover {
+    background-color: green;
+}

@@ -1,0 +1,31 @@
+<% const navLinks = [
+    {
+        title: "Главная",
+        href: "/"
+    },
+    {
+        title: "Каталог",
+        href: "/catalog"
+    },
+    {
+        title: "О нас",
+        href: "/about"
+    }
+]; %>
+
+<header class="header">
+    <nav class="header__nav">
+        <% navLinks.forEach(item => { %>
+            <a href="<%= item.href; %>" class="nav__item"><%= item.title; %></a>
+        <% }); %>
+    </nav>
+
+    <div class="header__actions">
+        <% if (loggedIn) { %>
+            <a href="/cart" class="nav__item">Корзина</a>
+            <a href="/profile" class="nav__item">Профиль</a>
+        <% } else { %>
+            <a href="/auth" class="nav__item">Войти</a>
+        <% }; %>
+    </div>
+</header>

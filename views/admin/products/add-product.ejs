@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <%- include("../../fonts/Roboto"); %>
+    <link rel="stylesheet" href="/css/admin/products/add-product.css">
+    <title>Добавление товара</title>
+</head>
+<body>
+<div class="wrapper">
+    <a href="/admin/products" class="back">Вернуться назад</a>
+    <div class="content">
+        <div class="title">
+            <h1>Добавление товара</h1>
+        </div>
+        <form class="form">
+            <div class="form__input-wrapper">
+                <label for="brand-id">Бренд</label>
+                <select id="brand-id" name="brandId">
+                    <option></option>
+                    <% brands.forEach(brand => { %>
+                        <option value="<%= brand.id; %>"><%= brand.name; %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form__input-wrapper">
+                <label for="name">Название товара</label>
+                <input type="text" id="name" name="name" placeholder="Введите название">
+            </div>
+            <div class="form__input-wrapper">
+                <label for="category-id">Категория</label>
+                <select id="category-id" name="categoryId">
+                    <option></option>
+                    <% categories.forEach(category => { %>
+                        <option value="<%= category.id; %>"><%= category.name; %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form__input-wrapper">
+                <label for="price">Цена</label>
+                <input type="text" id="price" name="price" placeholder="Введите цену" />
+            </div>
+            <div class="form__input-wrapper">
+                <label for="description">Описание товара</label>
+                <input type="text" id="description" name="description" placeholder="Введите описание" />
+            </div>
+            <div class="form__input-wrapper">
+                <label for="color">Цвет</label>
+                <select name="colorId" id="color">
+                    <option></option>
+                    <% colors.forEach(color => { %>
+                        <option value="<%= color.id; %>"><%= color.name; %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form__input-wrapper">
+                <label for="sex">Пол</label>
+                <select name="sex" id="sex">
+                    <% [{
+                        content: "male",
+                        text: "Муж."
+                    }, {
+                        content: "female",
+                        text: "Жен."
+                    }, {
+                        content: "unisex",
+                        text: "Унисекс"
+                    }].forEach(({ content, text }) => { %>
+                        <option value="<%= content; %>"><%= text; %></option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="form__actions">
+                <button>Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/scripts/jquery-3.7.1.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#price").on("change", function() {
+            const $input = $(this);
+
+            if (/^\d+$/.test($(this).val())) {
+                $input.removeClass("error");
+            } else {
+                $input.addClass("error");
+            }
+        });
+
+        $(".form").on("submit", function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: "/api/admin/product",
+                method: "POST",
+                data: $(this).serialize(),
+                success: (res) => {
+                   if (res.status === "successful") {
+                       window.location.replace(`/admin/product/${res.insertId}`)
+                   }
+                },
+            });
+        });
+    });
+</script>
+</body>
+</html>
+

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/css/cart-page.css">
+    <title>Корзина</title>
+</head>
+<body>
+<div class="wrapper">
+    <%- include("components/header", { loggedIn }); %>
+
+    <div class="content">
+        <h1 class="content__title">Корзина</h1>
+        <div class="products-list">
+            <% product_list.forEach(product => { %>
+                <div class="product">
+                    <img src="/<%= product.product_image %>" alt="Image product" class="product__image">
+                    <div class="product__info">
+                        <p class="product__name"><%= product.brand_name; %> <%= product.name %></p>
+                        <p>Размер: <%= formatSize(product.size_value); %></p>
+                        <p class="product__color"><%= product.color_name; %></p>
+                    </div>
+                    <div class="product__quantity">
+                        <button class="product__btnAction" data-type="add" data-sizeid="<%= product.size_id; %>">+
+                        </button>
+                        <span class="product__test"><%= product.quantity; %></span>
+                        <button class="product__btnAction" data-type="reduce" data-sizeid="<%= product.size_id; %>">-
+                        </button>
+                    </div>
+                    <p class="product__price"><%= product.price.toLocaleString("ru-RU", {
+                            style: "currency",
+                            currency: "RUB",
+                            maximumFractionDigits: 0,
+                        }); %></p>
+                </div>
+            <% }); %>
+        </div>
+        <div class="order">
+            <button id="clear-btn" class="order__button clear">Очистить коризну</button>
+            <button id="create-order" class="order__button place-order">Оформить заказ</button>
+        </div>
+    </div>
+
+</div>
+</body>
+<script src="/scripts/jquery-3.7.1.js"></script>
+<script>
+    $(document).ready(function() {
+        $(".product").on("click", ".product__btnAction", function() {
+            const typeAction = $(this).data("type");
+
+            $.ajax({
+                url: "/api/cart/update",
+                method: "PUT",
+                data: {
+                    type: typeAction,
+                    sizeId: $(this).data("sizeid"),
+                },
+            }).done((res) => {
+                if (res.delete) {
+                    $(this).closest(".product").remove();
+                } else {
+                    $(this).closest(".product__quantity").children("span").text(res.quantity);
+                }
+            }).fail((jqXHR) => {
+                if (jqXHR.status === 400) {
+                    window.alert(jqXHR.responseJSON.message);
+                }
+            });
+        });
+
+        $("#clear-btn").on("click", function() {
+            $.ajax({
+                url: "/api/cart/clear",
+                method: "DELETE",
+            }).done(() => {
+                $(".products-list").html("");
+            });
+        });
+
+        $("#create-order").on("click", function() {
+            $.ajax({
+                url: "/api/order",
+                method: "POST",
+                data: {},
+            }).done((res) => {
+                console.log(res);
+            });
+        });
+    })
+    ;
+</script>
+</html>

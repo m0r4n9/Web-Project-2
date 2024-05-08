@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/css/profile.css">
+    <title>Профиль</title>
+</head>
+<body>
+<div class="wrapper">
+    <%- include("./components/header", { loggedIn }); %>
+
+    <div class="content">
+        <div class="profile">
+            <div class="profile__field">
+                <label for="username">Имя:</label>
+                <input type="text" id="username" name="username" value="<%= user.username; %>" disabled>
+            </div>
+            <div class="profile__field">
+                <label for="email">Электронная почта:</label>
+                <input type="text" id="email" name="email" value="<%= user.email; %>" disabled>
+            </div>
+            <div class="profile__field">
+                <p>Дата регистрации: <span><%= new Date(user.registration_date).toLocaleDateString("ru-RU", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric"
+                        }); %></span></p>
+            </div>
+            <div class="profile__actions">
+                <button id="change_profile">
+                    Изменить данные
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/scripts/jquery-3.7.1.js"></script>
+<script>
+    $(document).ready(function() {
+        const originalValues = {};
+        const $btnChange = $("#change_profile");
+        const $actionsBlock = $(".profile__actions");
+
+        function inputDisabledAttr(disabled) {
+            $(".profile__field input").each(function() {
+                if (!disabled) {
+                    originalValues[this.id] = $(this).val();
+                }
+                $(this).prop("disabled", disabled);
+            });
+        }
+
+
+        $btnChange.click(function() {
+            inputDisabledAttr(false);
+            $actionsBlock
+                .append("<div id='edit' class='actions__edit'>" +
+                    "<button id='cancel_edit' class='actions__cancel'>Отменить изменения</button>" +
+                    "<button id='save_edit 'class='actions__save'>Сохранить изменения</button>" +
+                    "</div>")
+            $(this).hide();
+        });
+
+        $actionsBlock.on("click", "#cancel_edit", function() {
+            $(".profile__field input").each(function() {
+                $(this)
+                    .val(originalValues[this.id])
+                    .prop("disabled", true)
+                    .removeClass("error");
+            });
+            $("#edit").remove();
+            $btnChange.show();
+        });
+
+        function emptyInputVal(element, message) {
+            const $inputWrapper = $(".profile__field");
+            if (!element.val()) {
+                element.addClass("error");
+                if (!$inputWrapper.has("p").length) {
+                    $inputWrapper.append(`<p>${message}</p>`);
+                }
+                return true;
+            } else {
+                element.removeClass("error");
+                $inputWrapper.remove("p");
+                return false;
+            }
+        }
+
+        $actionsBlock.on("click", "#save_edit", function() {
+            let error = false;
+            $(".profile__field input").each(function() {
+                if (emptyInputVal($(this), "Вы пропустили поле")) {
+                    error = true;
+                }
+            });
+
+            if (!error) {
+                $.ajax({
+                    url: "/api/profile/update",
+                    method: "PUT",
+                    data: {
+                        username: $("#username").val(),
+                        email: $("#email").val()
+                    },
+                    success: (res) => {
+                        if (res.success) {
+                            $("#edit").remove();
+                            $("#change_profile").show();
+                            inputDisabledAttr(true);
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

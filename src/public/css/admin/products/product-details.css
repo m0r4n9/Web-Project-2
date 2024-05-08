@@ -1,0 +1,294 @@
+@import "../../reset.css";
+@import "../../varibles/global.css";
+
+body {
+    font-family: var(--font-family-roboto), sans-serif;
+}
+
+.wrapper {
+    padding: 20px 30px;
+}
+
+.back {
+    padding: 12px 0;
+}
+
+.title {
+    text-align: center;
+}
+
+.content {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+}
+
+.content .content__block {
+    border-bottom: 2px solid black;
+    padding-bottom: 30px;
+}
+
+.product__id span {
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.information {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.information__item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.information__input {
+    font-size: 14px;
+    padding: 8px 12px;
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+.information__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-top: 20px;
+}
+
+.information__edit {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.information__edit button {
+    padding: 8px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+}
+
+.information__edit button:disabled {
+    background-color: #888888;
+}
+
+.information__save-btn {
+    background-color: green;
+}
+
+.information__cancel-btn {
+    background-color: red;
+}
+
+.information__remove-btn {
+    border: 1px solid red;
+    padding: 8px;
+    border-radius: 6px;
+
+    transition: background-color 0.3s ease;
+}
+
+.information__remove-btn:hover {
+    background-color: red;
+    color: white;
+}
+
+/* Общие стили для доп. информации о товаре */
+.additional__block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Sizes */
+.sizes__list {
+    max-width: 600px;
+
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.size-container {
+    position: relative;
+}
+
+.size__item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.size-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.size-form__label {
+
+}
+
+.size-form__input {
+    border-bottom: 1px solid black;
+    padding: 8px;
+}
+
+.size-form__btn {
+    border: 1px solid green;
+    border-radius: 8px;
+    padding: 4px;
+
+    transition: all 0.3s ease;
+}
+
+.size-form__btn:hover {
+    background-color: green;
+    color: white;
+}
+
+/* Images */
+.images__list {
+    display: flex;
+    gap: 8px;
+}
+
+.image-container {
+    position: relative;
+}
+
+.image-container img {
+    width: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.image-delete__button, .size-delete__button {
+    display: none;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    border-radius: 50%;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 4px;
+    z-index: 100;
+
+    cursor: pointer;
+}
+
+.size-delete__button {
+    background-color: black;
+    color: white;
+
+    top: -10px;
+    right: -10px;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50vw;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.loading-spinner {
+    display: none;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+}
+
+.size__input {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.size__input input {
+    padding: 6px;
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+.size__input .error {
+    border-color: red !important;
+}
+
+.size__info button {
+    padding: 6px;
+    border-radius: 6px;
+    background-color: green;
+    color: white;
+
+    transition: opacity 0.3s ease;
+}
+
+.size__info button:disabled {
+    background-color: #006000;
+}
+
+.size__info button:hover {
+    opacity: 0.7;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

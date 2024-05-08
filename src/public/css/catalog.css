@@ -1,0 +1,124 @@
+@import "reset.css";
+@import "./components/header.css";
+
+.title {
+    text-align: center;
+
+    margin-top: 20px;
+}
+
+.content {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+
+    padding: 10px 30px;
+}
+
+.filters {
+    border: 1px solid black;
+    padding: 12px 8px;
+    border-radius: 6px;
+
+    width: 200px;
+}
+
+.filters__title {
+    padding: 8px 0;
+}
+
+.price__title, .categories__title, .colors__title, .sex__title {
+    padding: 4px 0;
+}
+
+.filters__content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.price {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.price__block {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.price__block input {
+    padding: 4px 8px;
+    border-bottom: 1px solid black;
+
+}
+
+.list__checkbox {
+    display: flex;
+    flex-direction: column;
+
+
+    width: 80%;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.list__item {
+    display: flex;
+
+}
+
+.catalog {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+
+    margin-top: 30px;
+    padding: 12px 40px;
+}
+
+.item {
+    width: 300px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+    border-radius: 10px;
+    padding: 10px 12px;
+
+    cursor: pointer;
+
+    background-color: #F2F2F2;
+
+    transition: all 0.3s ease;
+}
+
+.item:hover {
+    box-shadow: 0 0 1px 1px black;
+}
+
+.image_preview {
+    width: 100%;
+    object-fit: cover;
+
+    border-radius: 10px;
+}
+
+.item__info {
+    text-align: center;
+}
+
+.item__title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.item__price {
+    margin-top: 12px;
+}

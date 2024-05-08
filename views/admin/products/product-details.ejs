@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <%- include("../../fonts/Roboto"); %>
+    <link rel="stylesheet" href="/css/admin/products/product-details.css">
+    <title><%= product?.name; %></title>
+</head>
+<body>
+<div class="wrapper">
+    <div class="back">
+        <a href="/admin/products">< Вернуться назад</a>
+    </div>
+    <div class="title">
+        <h1>
+            Товар
+            <%= product.name; %>
+        </h1>
+        <div class="product__id">
+            Индификатор товара:
+            <span> <%= product.id; %></span>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="content__block">
+            <form class="form-information">
+                <input type="hidden" id="productId" name="productId" value="<%= product.id; %>">
+                <div class="information">
+                    <div class="information__item">
+                        <label for="brand-name">Бренд</label>
+                        <select name="brand" id="brand-name" class="information__input">
+                            <% brands.forEach(({ id, name }) => {
+                                const selected = id === product.brand_id ? "selected" : ""; %>
+                            <option value="<%= id; %>"<%= selected; %> ><%= name; %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+
+                    <div class="information__item">
+                        <label for="product-name">
+                            Название товара
+                        </label>
+                        <input type="text" id="product-name" name="product-name" value="<%= product.name; %>"
+                               class="information__input">
+                    </div>
+
+                    <div class="information__item">
+                        <label for="product-desc">
+                            Описание
+                        </label>
+                        <input type="text" id="product-desc" name="product-desc" value="<%= product.description; %>"
+                               class="information__input">
+                    </div>
+
+                    <div class="information__item">
+                        <label for="product-category">
+                            Категория товара
+                        </label>
+<!--                        TODO: redo it for select  -->
+                        <input type="text" id="product-category" name="product-category"
+                               value="<%= product.category_name; %>"
+                               class="information__input">
+                    </div>
+
+                    <div class="information__item">
+<!--                        TODO: validation for input (only numbers) -->
+                        <label for="product-price">
+                            Цена
+                        </label>
+                        <input type="text" id="product-price" name="product-price" value="<%= product.price; %>"
+                               class="information__input">
+                    </div>
+
+                    <div class="information__item">
+                        <label for="product-color">
+                            Цвет
+                        </label>
+                        <select name="product-color" id="product-color" class="information__input">
+                            <% colors.forEach(({ id, name }) => {
+                                const selected = id === product.color_id ? "selected" : ""; %>
+                            <option value="<%= id; %>"<%= selected; %> ><%= name; %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+
+                    <div class="information__item">
+                        <label for="product-sex">
+                            Пол
+                        </label>
+                        <select name="product-sex" id="product-sex" class="information__input">
+                            <% [{
+                                content: "male",
+                                text: "Муж."
+                            }, {
+                                content: "female",
+                                text: "Жен."
+                            }, {
+                                content: "unisex",
+                                text: "Унисекс"
+                            }].forEach(({ content, text }) => {
+                                const selected = content === product.sex ? "selected" : ""; %>
+                            <option value="<%= content; %>"<%= selected; %> ><%= text; %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                </div>
+                <div class="information__actions">
+                    <div class="information__edit">
+                        <button disabled class="information__save-btn">Сохранить</button>
+                        <button type="button" disabled class="information__cancel-btn">Отменить</button>
+                    </div>
+                    <button type="button" class="information__remove-btn">Удалить товар</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="content__block additional__block sizes">
+            <div class="sizes__title">
+                <h2>Размеры</h2>
+            </div>
+            <div class="sizes__list">
+                <% sizes.forEach(({ id, name, size_quantity }) => { %>
+                    <div class="size-container" data-sizeid="<%= id; %>">
+                        <div class="size__item">
+                            <span><%= formatSize(name); %></span>
+                            <p>Кол-во: <%= size_quantity ? size_quantity : 0 %></p>
+                        </div>
+                        <button class="size-delete__button">X</button>
+                    </div>
+                <% }); %>
+            </div>
+            <form class="size-form">
+                <label for="size-add" class="size-form__label">Размер:</label>
+                <input type="text" id="size-add" name="size" placeholder="Введите размер" maxlength="3" minlength="2"
+                       class="size-form__input">
+                <input type="hidden" id="size-product-id" name="size-product-id" value="<%= product.id; %>">
+                <button class="size-form__btn">Добавить</button>
+            </form>
+        </div>
+        <div class="content__block additional__block images">
+            <div class="images__title">
+                <h2>Изображения</h2>
+            </div>
+            <div class="images__list">
+                <% images.forEach(({ id, image_path }) => { %>
+                    <div class="image-container">
+                        <img src="/<%= image_path; %>" alt="Image for product">
+                        <button class="image-delete__button" data-imageid="<%= id; %>">X</button>
+                    </div>
+                <% }); %>
+            </div>
+            <form class="image-from" enctype="multipart/form-data">
+                <label for="size-add" class="size-form__label">
+                    Добавить изображения:
+                </label>
+                <input type="file" id="image-add" name="image" class="image-form__input">
+                <input type="hidden" name="productId" value="<%= product.id; %>">
+                <button class="size-form__btn">Сохранить</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="loading-spinner"></div>
+        <div class="size-details">
+            <h3 class="size__title"></h3>
+            <form class="size__info">
+                <div class="size__input">
+                    <label for="size-quantity">Кол-во на складе</label>
+                    <input type="text" id="size-quantity" name="size-quantity" value="">
+                </div>
+                <input type="hidden" id="size-id" value="">
+                <button type="submit" id="size-quantity-btn">Сохранить</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/scripts/jquery-3.7.1.js"></script>
+<script>
+    $(document).ready(function() {
+        $(".size__info").on("submit", function(e) {
+            e.preventDefault();
+            const $input = $("#size-quantity");
+            const quantityVal = $input.val();
+            const sizeId = $("#size-id").val();
+
+            if (!sizeId) {
+                console.log("Size id is undefined!");
+                return;
+            }
+
+            // validate value
+            $.ajax({
+                url: "/api/admin/size/inventory",
+                method: "POST",
+                data: {
+                    quantity: quantityVal,
+                    sizeId,
+                },
+                success: (res) => {
+                    console.log(res);
+                    if (res?.status === "success") {
+                        $input.val("");
+                    }
+                },
+            });
+        });
+
+        $("#size-quantity").on("input", function() {
+            const inputValue = $(this).val();
+
+            if (!/^\d{1,3}$/.test(inputValue) || !inputValue) {
+                $(this).addClass("error");
+                $("#size-quantity-btn").prop("disabled", true);
+                if (parseInt(inputValue) < 0) {
+                    $(this).val("0");
+                }
+            } else {
+                $(this).removeClass("error");
+                $("#size-quantity-btn").prop("disabled", false);
+            }
+        });
+
+        $(".sizes__list").on("click", ".size__item", function() {
+            const sizeId = $(this).parent().data("sizeid");
+
+            if (!sizeId) {
+                console.log("Id is undefined");
+                return;
+            }
+
+
+            $("#myModal .size__title").text("");
+            $("#myModal #size-quantity").val("");
+
+            $("#myModal").css("display", "block");
+
+            $.ajax({
+                url: `/api/admin/size/${sizeId}`,
+                method: "GET",
+                beforeSend: function() {
+                    $("#myModal .loading-spinner").show();
+                },
+                success: function(response) {
+                    $("#myModal .loading-spinner").hide();
+                    if (response?.status === "success") {
+                        const quantity = response.size.quantity ?? 0;
+
+                        $("#myModal .size__title").html(`Размер: ${response.size.name}`);
+                        $("#myModal #size-quantity").val(quantity);
+                        $("#myModal #size-id").val(response.size.id);
+                    }
+                },
+                error: function() {
+                    $("#myModal .loading-spinner").hide();
+                    $("#myModal .size-details").html("Error fetching data. Please try again later.");
+                },
+            });
+        });
+
+        $(".close").on("click", function() {
+            $("#myModal").css("display", "none");
+        });
+
+        $(window).on("click", function(event) {
+            if (event.target == $("#myModal")[0]) {
+                $("#myModal").css("display", "none");
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $(".information").on("change", function() {
+            $(".information__edit").children("button").each(function() {
+                $(this).prop("disabled", false);
+            });
+        });
+
+        $(".form-information").on("submit", function(e) {
+            e.preventDefault();
+            const productId = $("#productId").val();
+            const brand_id = $("#brand-name").val();
+            const productName = $("#product-name").val();
+            const productDesc = $("#product-desc").val();
+            const productCategory = $("#product-category").val();
+            const productPrice = $("#product-price").val();
+            const productColor = $("#product-color").val();
+            const productSex = $("#product-sex").val();
+
+
+            $.ajax({
+                url: "/api/admin/product",
+                method: "PUT",
+                data: {
+                    productId,
+                    brand_id,
+                    name: productName,
+                    description: productDesc,
+                    category: productCategory,
+                    price: productPrice,
+                    color_id: productColor,
+                    sex: productSex,
+                },
+                success: (res) => {
+                    console.log(res);
+                },
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $(".size-container").hover(
+            function() {
+                $(this).find(".size-delete__button").show();
+            },
+            function() {
+                $(this).find(".size-delete__button").hide();
+            },
+        );
+
+        $(".sizes__list").on("click", ".size-delete__button", function() {
+            if (window.confirm("Вы уверены, что хотите удалить размер?")) {
+                const imageId = $(this).parent().data("sizeid");
+
+                $.ajax({
+                    url: `/api/admin/size/${imageId}`,
+                    type: "DELETE",
+                    success: (res) => {
+                        if (res?.status === "success") {
+                            $(this).closest(".size-container").remove();
+                        } else {
+                            console.log("Error:", res);
+                        }
+                    },
+                });
+            }
+        });
+
+        $(".size-form").on("submit", function(e) {
+            e.preventDefault();
+            const sizeVal = $("#size-add").val();
+
+            if (sizeVal) {
+                $.ajax({
+                    url: "/api/admin/size",
+                    type: "POST",
+                    data: {
+                        size: sizeVal,
+                        productId: $("#size-product-id").val(),
+                    },
+                    success: (res) => {
+                        if (res?.status === "success") {
+                            const $container = $(`<div class='size-container' data-sizeid='${res.sizeId}'></div>`);
+                            const $sizeItem = $(`<div class='size__item'><span>${res.formatedSize}</span></div>`);
+                            $sizeItem.text(res.formatedSize);
+                            $sizeItem.append("<p>Кол-во: 0</p>");
+
+                            $container.append($sizeItem);
+
+                            const lengthSizes = $(".sizes__list").children().length;
+                            $(".sizes__list").children(".size-container").each(function(index) {
+                                if ($(this).find(".size__item span").text().trim() * 10 > Number(res.size)) {
+                                    $(this).before($container);
+                                    return false;
+                                }
+                                console.log(lengthSizes === ++index);
+                                if (lengthSizes === ++index) {
+                                    $(".sizes__list").append($container);
+                                }
+                            });
+                            $("#size-add").val("");
+                        }
+                    },
+                });
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $(".image-container").hover(
+            function() {
+                $(this).find(".image-delete__button").show();
+            },
+            function() {
+                $(this).find(".image-delete__button").hide();
+            },
+        );
+
+        $(".images__list").on("click", ".image-delete__button", function() {
+            if (window.confirm("Вы уверены, что хотите удалить изображение?")) {
+                const imageId = $(this).data("imageid");
+
+                $.ajax({
+                    url: `/api/admin/image/${imageId}`,
+                    type: "DELETE",
+                    success: (res) => {
+                        if (res?.status === "success") {
+                            $(this).closest(".image-container").remove();
+                        } else {
+                            console.log("Error:", res);
+                        }
+                    },
+                });
+            }
+        });
+
+        $(".image-from").on("submit", function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            if (formData.get("productId")) {
+                $.ajax({
+                    url: "/api/admin/image",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: (res) => {
+                        if (res.status === "success") {
+                            const $imageContainer = $("<div class='image-container'></div>");
+                            $imageContainer.append(`<img src='/${res.filename}' alt='Image for product'><button class="image-delete__button" data-imageid='${res.imageId}'>X</button>`);
+
+                            $imageContainer.hover(
+                                function() {
+                                    $(this).find(".image-delete__button").show();
+                                },
+                                function() {
+                                    $(this).find(".image-delete__button").hide();
+                                },
+                            );
+
+                            $(".images__list").append($imageContainer);
+
+                            $("#image-add").val("");
+                        }
+                    },
+                });
+            }
+        });
+
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $(".information__remove-btn").click(function() {
+            const productId = $("#productId").val();
+
+            if (!productId) {
+                console.log("Product ID is undefined.");
+                return;
+            }
+
+            if (window.confirm("Вы уверены, что хотите удалить данный товар?")) {
+                $.ajax({
+                    url: `/api/admin/product/${productId}`,
+                    method: "DELETE",
+                    success: (res) => {
+                        console.log(res);
+                    }
+                });
+            }
+        });
+    })
+</script>
+</body>
+</html>

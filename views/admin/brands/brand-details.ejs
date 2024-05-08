@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <%- include("../../fonts/Roboto"); %>
+    <link rel="stylesheet" href="/css/admin/products/product-details.css">
+    <title><%= brand?.name; %></title>
+</head>
+<body>
+<div class="wrapper">
+    <div class="back">
+        <a href="/admin/brands">< Вернуться назад</a>
+    </div>
+    <div class="title">
+        <h1>
+            Компания
+            <%= brand.name; %>
+        </h1>
+        <div class="product__id">
+            Индификатор компании:
+            <span> <%= brand.id; %></span>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="content__block">
+            <form class="form-information">
+                <input type="hidden" id="brand-id" name="brandId" value="<%= brand.id; %>">
+                <div class="information">
+                    <div class="information__item">
+                        <label for="brand-name">
+                            Название компании
+                        </label>
+                        <input type="text" id="brand-name" name="name" value="<%= brand.name; %>"
+                               class="information__input">
+                    </div>
+                </div>
+
+                <div class="information__actions">
+                    <div class="information__edit">
+                        <button disabled class="information__save-btn">Сохранить</button>
+                        <button type="button" disabled class="information__cancel-btn">Отменить</button>
+                    </div>
+                    <button type="button" class="information__remove-btn">Удалить товар</button>
+                </div>
+            </form>
+        </div>
+
+
+        <div class="content__block">
+            <a href="/admin/products?brandId=<%= brand.id %>">Посмотреть товары этого бренда.</a>
+        </div>
+    </div>
+</div>
+
+<script src="/scripts/jquery-3.7.1.js"></script>
+<script>
+    $(document).ready(function() {
+        const $form = $(".form-information");
+
+        $form.on("change", function() {
+            $(".information__edit").children("button").each(function() {
+                $(this).prop("disabled", false);
+            });
+        });
+
+        $form.submit(function(e) {
+            e.preventDefault();
+            const brandId = $("#brand-id").val();
+
+            $.ajax({
+                url: `/api/admin/brands/${brandId}`,
+                method: "PUT",
+                data: $(this).serialize(),
+                success: (res) => {
+                    if (res.status === "successful") {
+                        $(".information__edit").children("button").each(function() {
+                            $(this).prop("disabled", true);
+                        });
+                    } else {
+
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error("Ошибка запроса:", jqXHR, textStatus, errorThrown);
+                    if (jqXHR.status === 400) {
+                        console.error("Ошибка: Неверный запрос");
+                        $("#brand-name").after(`<p>${jqXHR.responseJSON.message}</p>`);
+                    } else if (jqXHR.status === 500) {
+                        console.error("Ошибка сервера");
+                    } else {
+                        console.error("Неизвестная ошибка");
+                    }
+                },
+            });
+        });
+
+        $(".information__remove-btn").on("click", function() {
+            if (window.confirm("Вы точно хотите удалить эту компанию?")) {
+                const brandId = $("#brand-id").val();
+
+                $.ajax({
+                    url: `/api/admin/brands/${brandId}`,
+                    method: "DELETE",
+                }).done(() => {
+                    window.location.replace("/admin/brands");
+                }).fail((jqXHR) => {
+                    if (jqXHR.status === 400) {
+                        window.alert(jqXHR.responseJSON.message);
+                    }
+                    if (jqXHR.status === 500) {
+                        window.alert("Ошибка на стороне сервера. Повторите попытку.");
+                    }
+                })
+            }
+        })
+    });
+</script>
+</body>
+</html>

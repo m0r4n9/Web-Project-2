@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <%- include("../../fonts/Roboto"); %>
+    <link rel="stylesheet" href="/css/admin/brands/brands.css">
+    <title>Бренды</title>
+</head>
+<body>
+<div class="content">
+    <a href="/admin">Главная</a>
+    <div class="admin-panel">
+        <div class="admin-panel__header">
+            <h1 class="admin-panel__title">Таблица категорий</h1>
+            <div class="admin-panel__add-product">
+                <a href="/admin/categories/add">Добавить категорию</a>
+            </div>
+        </div>
+        <table class="admin-panel__table">
+            <thead>
+            <tr class="admin-panel__row admin-panel__row--header">
+                <th class="admin-panel__cell admin-panel__cell--id"></th>
+                <th class="admin-panel__cell admin-panel__cell--id">ID</th>
+                <th class="admin-panel__cell admin-panel__cell--name">Название</th>
+                <th class="admin-panel__cell admin-panel__cell--edit"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <% categories?.forEach(({ id, name }) => { %>
+                <tr class="admin-panel__row">
+                    <td class="admin-panel__cell admin-panel__cell--additional"><a
+                                href="<%= "/admin/categories/" + id; %>">Подробнее</a></td>
+                    <td class="admin-panel__cell admin-panel__cell--id">
+                        <%= id; %></td>
+                    <td data-type="name" class="admin-panel__cell admin-panel__cell--name">
+                        <%= name; %></td>
+                    <td class="admin-panel__cell admin-panel__cell--actions">
+                        <button class="edit-button">Изменить</button>
+                    </td>
+                </tr>
+            <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="/scripts/jquery-3.7.1.js"></script>
+<script src="/scripts/edit-table.js"></script>
+<script>
+    $(document).ready(function() {
+        $("tbody").on("click", ".save-button", function() {
+            console.log("Save out file");
+            console.log($(".editing").find("input").each(function() {
+                console.log($(this).val());
+            }));
+
+            $(".editing input").each(function() {
+                console.log($(".editing input").html());
+            });
+        })
+    })
+</script>
+</body>
+</html>
