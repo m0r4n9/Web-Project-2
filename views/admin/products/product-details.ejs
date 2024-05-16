@@ -60,14 +60,17 @@
                         <label for="product-category">
                             Категория товара
                         </label>
-<!--                        TODO: redo it for select  -->
-                        <input type="text" id="product-category" name="product-category"
-                               value="<%= product.category_name; %>"
-                               class="information__input">
+                        <select name="category" id="product-category" class="information__input">
+                            <% categories.forEach(category => {
+                                const selected = category.name === product.category_name ? "selected" : "";
+                            %>
+                            <option value="<%= category.id %>"<%= selected; %>><%= category.name %></option>
+                            <% }); %>
+                        </select>
                     </div>
 
                     <div class="information__item">
-<!--                        TODO: validation for input (only numbers) -->
+                        <!--                        TODO: validation for input (only numbers) -->
                         <label for="product-price">
                             Цена
                         </label>
@@ -185,6 +188,19 @@
 
 <script src="/scripts/jquery-3.7.1.js"></script>
 <script>
+    <!--    Validate -->
+    $("#product-price").on("change", function() {
+        const $input = $(this);
+
+        if (/^\d+$/.test($(this).val())) {
+            $input.removeClass("error");
+        } else {
+            $input.addClass("error");
+            $(".information__edit")
+        }
+    });
+</script>
+<script>
     $(document).ready(function() {
         $(".size__info").on("submit", function(e) {
             e.preventDefault();
@@ -197,7 +213,6 @@
                 return;
             }
 
-            // validate value
             $.ajax({
                 url: "/api/admin/size/inventory",
                 method: "POST",
@@ -205,11 +220,9 @@
                     quantity: quantityVal,
                     sizeId,
                 },
-                success: (res) => {
-                    console.log(res);
-                    if (res?.status === "success") {
-                        $input.val("");
-                    }
+                success: () => {
+                    $("[data-sizeid='" + sizeId + "']").find(".size__item p").text(`Кол-во: ${quantityVal}`);
+                    $("#myModal").hide();
                 },
             });
         });
@@ -251,13 +264,11 @@
                 },
                 success: function(response) {
                     $("#myModal .loading-spinner").hide();
-                    if (response?.status === "success") {
-                        const quantity = response.size.quantity ?? 0;
+                    const quantity = response.size.quantity ?? 0;
 
-                        $("#myModal .size__title").html(`Размер: ${response.size.name}`);
-                        $("#myModal #size-quantity").val(quantity);
-                        $("#myModal #size-id").val(response.size.id);
-                    }
+                    $("#myModal .size__title").html(`Размер: ${response.size.name}`);
+                    $("#myModal #size-quantity").val(quantity);
+                    $("#myModal #size-id").val(response.size.id);
                 },
                 error: function() {
                     $("#myModal .loading-spinner").hide();
@@ -335,12 +346,8 @@
                 $.ajax({
                     url: `/api/admin/size/${imageId}`,
                     type: "DELETE",
-                    success: (res) => {
-                        if (res?.status === "success") {
-                            $(this).closest(".size-container").remove();
-                        } else {
-                            console.log("Error:", res);
-                        }
+                    success: () => {
+                        $(this).closest(".size-container").remove();
                     },
                 });
             }
@@ -359,27 +366,25 @@
                         productId: $("#size-product-id").val(),
                     },
                     success: (res) => {
-                        if (res?.status === "success") {
-                            const $container = $(`<div class='size-container' data-sizeid='${res.sizeId}'></div>`);
-                            const $sizeItem = $(`<div class='size__item'><span>${res.formatedSize}</span></div>`);
-                            $sizeItem.text(res.formatedSize);
-                            $sizeItem.append("<p>Кол-во: 0</p>");
+                        const $container = $(`<div class='size-container' data-sizeid='${res.sizeId}'></div>`);
+                        const $sizeItem = $(`<div class='size__item'><span>${res.formatedSize}</span></div>`);
+                        $sizeItem.text(res.formatedSize);
+                        $sizeItem.append("<p>Кол-во: 0</p>");
 
-                            $container.append($sizeItem);
+                        $container.append($sizeItem);
 
-                            const lengthSizes = $(".sizes__list").children().length;
-                            $(".sizes__list").children(".size-container").each(function(index) {
-                                if ($(this).find(".size__item span").text().trim() * 10 > Number(res.size)) {
-                                    $(this).before($container);
-                                    return false;
-                                }
-                                console.log(lengthSizes === ++index);
-                                if (lengthSizes === ++index) {
-                                    $(".sizes__list").append($container);
-                                }
-                            });
-                            $("#size-add").val("");
-                        }
+                        const lengthSizes = $(".sizes__list").children().length;
+                        $(".sizes__list").children(".size-container").each(function(index) {
+                            if ($(this).find(".size__item span").text().trim() * 10 > Number(res.size)) {
+                                $(this).before($container);
+                                return false;
+                            }
+                            console.log(lengthSizes === ++index);
+                            if (lengthSizes === ++index) {
+                                $(".sizes__list").append($container);
+                            }
+                        });
+                        $("#size-add").val("");
                     },
                 });
             }
@@ -427,23 +432,21 @@
                     processData: false,
                     contentType: false,
                     success: (res) => {
-                        if (res.status === "success") {
-                            const $imageContainer = $("<div class='image-container'></div>");
-                            $imageContainer.append(`<img src='/${res.filename}' alt='Image for product'><button class="image-delete__button" data-imageid='${res.imageId}'>X</button>`);
+                        const $imageContainer = $("<div class='image-container'></div>");
+                        $imageContainer.append(`<img src='/${res.filename}' alt='Image for product'><button class="image-delete__button" data-imageid='${res.imageId}'>X</button>`);
 
-                            $imageContainer.hover(
-                                function() {
-                                    $(this).find(".image-delete__button").show();
-                                },
-                                function() {
-                                    $(this).find(".image-delete__button").hide();
-                                },
-                            );
+                        $imageContainer.hover(
+                            function() {
+                                $(this).find(".image-delete__button").show();
+                            },
+                            function() {
+                                $(this).find(".image-delete__button").hide();
+                            },
+                        );
 
-                            $(".images__list").append($imageContainer);
+                        $(".images__list").append($imageContainer);
 
-                            $("#image-add").val("");
-                        }
+                        $("#image-add").val("");
                     },
                 });
             }
@@ -467,6 +470,9 @@
                     method: "DELETE",
                     success: (res) => {
                         console.log(res);
+                    },
+                    error: (jqHXR) => {
+                        console.log(jqHXR);
                     }
                 });
             }

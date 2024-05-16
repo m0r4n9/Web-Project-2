@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="/css/catalog.css">
     <title>Каталог товаров</title>
 </head>
+
 <body>
 <div class="wrapper">
     <%- include("components/header", { loggedIn }); %>
@@ -18,7 +20,10 @@
         <div class="filters">
             <div class="filters__title">
                 Фильтрация
+            </div>
+            <div class="filters__actions">
                 <button id="filter-btn">Применить</button>
+                <button id="filter-reset">Сбросить</button>
             </div>
             <div class="filters__content">
                 <div class="filters__price">
@@ -42,7 +47,7 @@
                     </div>
                     <div class="categories__list list__checkbox">
                         <% categories?.forEach((category) => { %>
-                            <div class="list__item">
+                            <div class="list__item checkbox">
                                 <input type="checkbox" id="<%= category.id; %>-<%= category.name; %>" name="category"
                                        value="<%= category.id; %>" class="checkbox-category">
                                 <label for="<%= category.id; %>-<%= category.name; %>"><%= category.name; %></label>
@@ -56,7 +61,7 @@
                     </div>
                     <div class="colors__list list__checkbox">
                         <% colors?.forEach((color) => { %>
-                            <div class="list__item">
+                            <div class="list__item checkbox">
                                 <input type="checkbox" id="<%= color.id; %>-<%= color.name; %>" name="colors"
                                        class="checkbox-colors"
                                        value="<%= color.id; %>">
@@ -73,16 +78,17 @@
                     <div class="sex__list list__checkbox">
                         <% [{
                             content: "male",
-                            text: "Муж.",
+                            text: "Муж."
                         }, {
                             content: "female",
-                            text: "Жен.",
+                            text: "Жен."
                         }, {
                             content: "unisex",
-                            text: "Унисекс",
+                            text: "Унисекс"
                         }].forEach((sex) => { %>
-                            <div class="list__item">
-                                <input type="checkbox" id="<%= sex.content; %>" name="sex" value="<%= sex.content; %>">
+                            <div class="list__item checkbox">
+                                <input type="checkbox" id="<%= sex.content; %>" name="sex" value="<%= sex.content; %>"
+                                       class="checkbox-sex" <%= sexChecked === sex.content ? "checked" : "" %>>
                                 <label for="<%= sex.content; %>"><%= sex.text; %></label>
                             </div>
                         <% }); %>
@@ -111,49 +117,136 @@
 <script src="/scripts/jquery-3.7.1.js"></script>
 <script>
     $(document).ready(function() {
+        function setFiltersFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+
+            const priceLow = params.get("priceLow");
+            const priceMax = params.get("priceMax");
+            const categories = params.getAll("categories");
+            const colors = params.getAll("colors");
+            const sex = params.getAll("sex");
+
+            if (priceLow) {
+                $("#price-low").val(priceLow);
+            }
+            if (priceMax) {
+                $("#price-max").val(priceMax);
+            }
+
+            categories.forEach(category => {
+                $(`input:checkbox.checkbox-category[value='${category}']`).prop("checked", true);
+            });
+
+            colors.forEach(color => {
+                $(`input:checkbox.checkbox-colors[value='${color}']`).prop("checked", true);
+            });
+
+            sex.forEach(sexValue => {
+                $(`input:checkbox.checkbox-sex[value='${sexValue}']`).prop("checked", true);
+            });
+        }
+
         $("#filter-btn").on("click", function() {
+            const priceLow = $("#price-low").val();
+            const priceMax = $("#price-max").val();
+
             const categories = [];
             const colors = [];
+            const sex = [];
 
-            $('input:checkbox.checkbox-category').each(function() {
-                if (this.checked) {
-                    categories.push($(this).val());
-                }
+            $("input:checkbox.checkbox-category").each(function() {
+                if (this.checked) categories.push($(this).val());
             });
 
-            $('input:checkbox.checkbox-colors').each(function() {
-                if (this.checked) {
-                    colors.push($(this).val());
-                }
+            $("input:checkbox.checkbox-colors").each(function() {
+                if (this.checked) colors.push($(this).val());
             });
 
+            $("input:checkbox.checkbox-sex").each(function() {
+                if (this.checked) sex.push($(this).val());
+            });
+
+            const params = new URLSearchParams({
+                priceLow,
+                priceMax,
+                categories,
+                colors,
+                sex,
+            });
+
+            const queryString = params.toString();
+            const newUrl = `${window.location.pathname}?${queryString}`;
+            history.pushState(null, "", newUrl);
 
             $.ajax({
                 url: "/api/products",
                 method: "GET",
                 data: {
+                    priceLow,
+                    priceMax,
                     categories,
-                    colors
+                    colors,
+                    sex,
                 },
-                traditional: true
+                traditional: true,
             }).done((products) => {
                 let content = "";
                 products.forEach(item => {
                     content += `
             <a href='/product/${item.id}' class="item">
                 <img src='/${item.image}' alt='123' class='image_preview' />
-                <div class='item_info'>
+                <div class='item__info'>
                     <p class='item__title'>${item.name}</p>
-                    <p class='item__price'>${item.price}
+                    <p class='item__price'>${Number(item.price).toLocaleString("ru-RU", {
+                        style: "currency",
+                        currency: "RUB",
+                        maximumFractionDigits: 0,
+                    })}
                     </p>
                 </div>
             </a>
             `;
-                    console.log(content);
-                })
+                });
                 $(".catalog").html(content);
-            })
-        })
+            });
+        });
+
+        $("#filter-reset").click(function() {
+            $("input[type=text]").each(function() {
+                this.value = "";
+            });
+            $("input[type=checkbox]").each(function() {
+                this.checked = false;
+            });
+
+            history.pushState(null, "", window.location.pathname);
+
+            $.ajax({
+                url: "/api/products",
+                method: "GET",
+            }).done((products) => {
+                let content = "";
+                products.forEach(item => {
+                    content += `
+            <a href='/product/${item.id}' class="item">
+                <img src='/${item.image}' alt='123' class='image_preview' />
+                <div class='item__info'>
+                    <p class='item__title'>${item.name}</p>
+                    <p class='item__price'>${Number(item.price).toLocaleString("ru-RU", {
+                        style: "currency",
+                        currency: "RUB",
+                        maximumFractionDigits: 0,
+                    })}
+                    </p>
+                </div>
+            </a>
+            `;
+                });
+                $(".catalog").html(content);
+            });
+        });
+
+        setFiltersFromUrl();
     });
 </script>
 </body>

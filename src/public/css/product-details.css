@@ -1,6 +1,28 @@
 @import "reset.css";
 @import "./components/header.css";
 
+#toaster {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px, rgba(0, 0, 0, 0.24) 0 1px 2px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    z-index: 1000;
+}
+
+.successful {
+    background-color: #ffffff;
+}
+
+.error {
+    background-color: red !important;
+    color: white;
+}
+
+
 .content {
     display: flex;
     justify-content: center;
@@ -13,17 +35,25 @@
 
 .images {
     position: relative;
-    width: 50%;
+    width: 30%;
+}
+
+.images img {
+    border-radius: 6px;
 }
 
 .information {
-    flex: 1;
-
     display: flex;
     flex-direction: column;
     align-items: center;
-
     gap: 30px;
+
+    width: 20%;
+
+    padding: 30px 18px;
+
+    box-shadow: rgba(60, 64, 67, 0.3) 0 1px 2px 0, rgba(60, 64, 67, 0.15) 0 1px 3px 1px;
+    border-radius: 6px;
 }
 
 .information__name {
@@ -60,11 +90,12 @@
 
     cursor: pointer;
 
-    transition: opacity 0.2s ease;
+    transition: background-color 0.3s ease, color .2s ease;
 }
 
 .sizes__item:hover {
-    opacity: 0.6;
+    background-color: black;
+    color: white;
 }
 
 swiper-container {
@@ -86,7 +117,7 @@ swiper-slide img {
 swiper-slide {
     background-size: cover;
     background-position: center;
-} 
+}
 
 .mySwiper2 .swiper-slide-thumb-active {
     opacity: 1;

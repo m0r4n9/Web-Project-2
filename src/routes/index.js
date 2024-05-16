@@ -16,15 +16,12 @@ const orderApi = require("./api/order");
 const adminRoutes = require("./admin/views");
 const adminApi = require("./admin/api");
 
-const authRequire = require("../middlewares/requireAuth");
-
 const router = new Router();
 
 // Views Routes
 router.use(userRoutes);
 router.use(productRoutes);
 router.use(cartRoutes);
-router.use("/admin", adminRoutes);
 
 // API Routes
 router.use("/api", userApi);
@@ -33,9 +30,8 @@ router.use("/api/cart", cartApi);
 router.use("/api", orderApi);
 router.use("/api/admin", adminApi);
 
-router.get("/private", authRequire, (req, res) => {
-    return res.send("It is private page");
-});
+// Admin routes
+router.use("/admin", adminRoutes);
 
 router.use((req, res) => {
     res.status(404);

@@ -65,6 +65,7 @@
         </div>
     </div>
 </div>
+<div id="toaster">Товар добавлен в корзину!</div>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
 <script src="/scripts/jquery-3.7.1.js"></script>
 <script>
@@ -76,15 +77,26 @@
                 $.ajax({
                     url: "/api/cart/add",
                     method: "POST",
-                    data: {
-                        sizeId,
-                    },
-                    success: function(response) {
-                        console.log(response);
-                    },
+                    data: { sizeId },
+                    beforeSend: () => {
+                        $("#toaster").removeClass("error").removeClass("successful");
+                    }
+                }).done((response) => {
+                    console.log(response);
+                    $("#toaster").text("Товар добавлен в корзину!").css("opacity", 1).addClass("successful");
+                }).fail((jqXHR) => {
+                    if (jqXHR.status === 401) {
+                        const errorMessage = jqXHR.responseJSON.message || "Ошибка при добавлении товара";
+                        $("#toaster").text(errorMessage).css("opacity", 1).addClass("error");
+                    }
+                }).always(async () => {
+                    setTimeout(() => {
+                        $("#toaster").css("opacity", 0);
+                    }, 3000);
                 });
             }
         });
+
     });
 </script>
 </body>

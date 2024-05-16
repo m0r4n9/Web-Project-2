@@ -53,6 +53,10 @@ body {
     border-radius: 4px;
 }
 
+.error {
+    border-color: red !important;
+}
+
 .information__actions {
     display: flex;
     justify-content: space-between;
@@ -66,6 +70,8 @@ body {
     align-items: center;
     gap: 20px;
 }
+
+
 
 .information__edit button {
     padding: 8px;

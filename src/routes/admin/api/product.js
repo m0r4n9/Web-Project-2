@@ -59,9 +59,11 @@ router.put("/product", (req, res) => {
 
     updateParams.push(productId);
 
-    const updateQuery = `UPDATE products SET ${Object.keys(updateFields)
-        .map((field) => `${field} = ?`)
-        .join(", ")} WHERE id = ?`;
+    const updateQuery = `UPDATE products
+                         SET ${Object.keys(updateFields)
+                             .map((field) => `${field} = ?`)
+                             .join(", ")}
+                         WHERE id = ?`;
 
     conn.query(updateQuery, [...Object.values(updateFields), productId], (error) => {
         if (error) {
@@ -111,18 +113,14 @@ router.delete("/product/:id", (req, res) => {
         });
     }
 
-    // TODO: расскоментить потом.
-    // conn.query("DELETE FROM products WHERE id = ?", [id], (err) => {
-    //     if (err) {
-    //         return res.status(500).json({
-    //             status: "error",
-    //             message: `Error when delete product: ${err}`,
-    //         });
-    //     }
-    //     return res.json({
-    //         status: "success",
-    //     });
-    // });
+    conn.query("DELETE FROM products WHERE id = ?", [id], (err, result) => {
+        if (err) {
+            return res.status(500).json({
+                message: `Error when delete product: ${err}`,
+            });
+        }
+        return res.json(result);
+    });
 });
 
 module.exports = router;

@@ -1,0 +1,140 @@
+@import "../../reset.css";
+@import "../../varibles/global.css";
+
+
+body {
+    font-family: var(--font-family-roboto), sans-serif;
+}
+
+.wrapper {
+    padding: 20px 30px;
+}
+
+.back {
+    padding: 12px 0;
+}
+
+.title {
+    text-align: center;
+}
+
+.content {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+}
+
+.content .content__block {
+    border-bottom: 2px solid black;
+    padding-bottom: 30px;
+}
+
+.product__id span {
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.information {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.information__item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.information__input {
+    font-size: 14px;
+    padding: 8px 12px;
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+.error {
+    border-color: red !important;
+}
+
+.information__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-top: 20px;
+}
+
+.information__edit {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+
+.information__edit button {
+    padding: 8px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+}
+
+.information__edit button:disabled {
+    background-color: #888888;
+}
+
+.information__save-btn {
+    background-color: green;
+}
+
+.information__cancel-btn {
+    background-color: red;
+}
+
+.information__remove-btn {
+    border: 1px solid red;
+    padding: 8px;
+    border-radius: 6px;
+
+    transition: background-color 0.3s ease;
+}
+
+.information__remove-btn:hover {
+    background-color: red;
+    color: white;
+}
+
+/* Items List Styles */
+.products__list {
+    max-width: 60vw;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+
+    margin-top: 20px;
+}
+
+.products__title {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.wrapper__list {
+
+}
+
+.list__item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    padding: 12px 8px;
+    border: 1px solid black;
+    border-radius: 6px;
+}
+
+.item__name {
+    font-weight: bold;
+}

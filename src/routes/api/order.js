@@ -7,11 +7,25 @@ const router = new Router();
 const addItemToOrder = (orderId, sizeId, quantity) => {
     return new Promise((resolve, reject) => {
         conn.query(
-            "INSERT INTO order_items (order_id, size_id, quantity) VALUES (?, ?, ?);",
-            [orderId, sizeId, quantity],
-            (err) => {
+            `SELECT products.name, products.price, sizes.name as size_name
+             FROM products
+                      LEFT JOIN sizes ON products.id = sizes.product_id
+             WHERE sizes.id = ?`,
+            [sizeId],
+            (err, product) => {
                 if (err) reject(err);
-                resolve();
+
+                const { name, price, size_name } = product[0];
+
+                conn.query(
+                    `INSERT INTO order_items (order_id, size_value, quantity, product_name, product_price)
+                     VALUES (?, ?, ?, ?, ?);`,
+                    [orderId, size_name, quantity, name, price],
+                    (insert_err) => {
+                        if (err) reject(insert_err);
+                        resolve();
+                    },
+                );
             },
         );
     });
@@ -75,7 +89,6 @@ router.post("/order", (req, res) => {
             [cart[0].id],
             (items_err, items) => {
                 if (items_err) {
-                    console.log(items_err);
                     return res.status(500).json({
                         message: items_err,
                     });

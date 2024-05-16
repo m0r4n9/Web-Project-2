@@ -50,9 +50,7 @@
                     $(".form__error").remove();
                 }
             }).done((res) => {
-                if (res.status === "successful") {
                     window.location.replace(`/admin/brands/${res.insertId}`)
-                }
             }).fail((jqXHR, textStatus) => {
                 console.log(jqXHR, textStatus)
                 if (jqXHR.status === 400) {

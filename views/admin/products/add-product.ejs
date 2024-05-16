@@ -101,9 +101,7 @@
                 method: "POST",
                 data: $(this).serialize(),
                 success: (res) => {
-                   if (res.status === "successful") {
-                       window.location.replace(`/admin/product/${res.insertId}`)
-                   }
+                    window.location.replace(`/admin/product/${res.insertId}`)
                 },
             });
         });

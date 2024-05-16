@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <%- include("../../fonts/Roboto"); %>
+        <link rel="stylesheet" href="/css/admin/users/users.css">
+        <title>Панель администратора</title>
+</head>
+
+<body>
+    <div class="content">
+        <a href="/admin">Главная</a>
+        <div class="admin-panel">
+            <div class="admin-panel__header">
+                <h1 class="admin-panel__title">Таблица пользователей</h1>
+            </div>
+            <table class="admin-panel__table">
+                <thead>
+                    <tr class="admin-panel__row admin-panel__row--header">
+                        <th class="admin-panel__cell admin-panel__cell--id"></th>
+                        <th class="admin-panel__cell admin-panel__cell--id">ID</th>
+                        <th class="admin-panel__cell admin-panel__cell--name">Имя пользователя</th>
+                        <th class="admin-panel__cell admin-panel__cell--email">Почта</th>
+                        <th class="admin-panel__cell admin-panel__cell--isAdmin">Права администратора</th>
+                        <th class="admin-panel__cell admin-panel__cell--date">Дата регистрации</th>
+                        <th class="admin-panel__cell admin-panel__cell--edit"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%
+                    function formatDate(timestamp) {
+                        const date = new Date(timestamp);
+                        const day = date.getDate();
+                        const year = date.getFullYear();
+                        const month = date.getMonth() + 1;
+
+                        const formattedMonth = (month < 10) ? `0${month}` : month;
+                        const formattedDay = (day < 10) ? `0${day}` : day;
+
+                        return `${formattedDay}.${formattedMonth}.${year}`;
+                    }
+                        for (const user of users) { %>
+                        <tr class="admin-panel__row">
+                            <td class="admin-panel__cell admin-panel__cell--additional">
+                                <a href="<%= "/admin/users/" + user.id; %>">Подробнее</a>
+                            </td>
+                            <td data-type="id" class="admin-panel__cell admin-panel__cell--id"><%= user.id; %></td>
+                            <td data-type="username" class="admin-panel__cell admin-panel__cell--name"><%= user.username; %></td>
+                            <td data-type="email" class="admin-panel__cell admin-panel__cell--email"><%= user.email; %></td>
+                            <td class="admin-panel__cell admin-panel__cell--isAdmin"><%= user.isAdmin ? "Да" : "Нет"; %></td>
+                            <td class="admin-panel__cell admin-panel__cell--date"><%= formatDate(user.registration_date)  ; %></td>
+                            <td class="admin-panel__cell admin-panel__cell--actions">
+                                <button class="edit-button">Изменить</button>
+                            </td>
+                        </tr>
+                    <% }; %>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="/scripts/jquery-3.7.1.js"></script>
+<script src="/scripts/edit-table.js"></script>
+<script>
+    $(document).ready(function () {
+        $("tbody").on("click", ".save-button", function () {
+            const data = {};
+
+            $(".editing").find("input").each(function () {
+                data[$(this).attr("name")] = $(this).val();
+            })
+
+            $.ajax({
+                url: `/api/admin/users/${data.id}`,
+                method: "PUT",
+                data: {
+                    ...data,
+                }
+            }).done(() => {
+                $(".editing input").each(function () {
+                    const value = $(this).val();
+
+                    $(this).closest("td").html(value);
+                    $(".save-button").remove();
+                    $(".reset-button").remove();
+
+                    $(".edit-button").show();
+
+                    $(".editing").removeClass("editing");
+                })
+            }).fail((jqHXR) => {
+                console.log(jqHXR);
+            })
+        })
+    })
+</script>
+</body>
+</html>

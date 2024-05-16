@@ -1,4 +1,5 @@
 const Router = require("express");
+
 const conn = require("../../config/db");
 
 const router = new Router();
@@ -30,6 +31,12 @@ const getInventorySize = (sizeId) => {
 router.post("/add", (req, res) => {
     const { sizeId } = req.body;
     const userId = req.session?.userId;
+
+    if (!userId) {
+        return res.status(401).json({
+            message: "Пользователь не авторизован",
+        });
+    }
 
     conn.query(
         `SELECT *
@@ -81,6 +88,17 @@ router.post("/add", (req, res) => {
                         },
                     );
                 }
+            } else {
+                conn.query("INSERT INTO carts (user_id) VALUES (?)", [userId], (cart_insert_err, cart_insert) => {
+                    if (cart_insert_err) {
+                        return res.status(500).json({
+                            message: cart_insert_err,
+                        });
+                    }
+                    return res.json({
+                        cart_insert,
+                    });
+                });
             }
         },
     );
@@ -88,6 +106,12 @@ router.post("/add", (req, res) => {
 
 router.delete("/clear", (req, res) => {
     const userId = req.session?.userId;
+
+    if (!userId) {
+        return res.status(401).json({
+            message: "Пользователь не авторизирован.",
+        });
+    }
 
     conn.query("SELECT * FROM carts WHERE user_id = ?", [userId], (fetch_err, cart_res) => {
         if (fetch_err) {
@@ -114,9 +138,15 @@ router.put("/update", async (req, res) => {
     const { type, sizeId } = req.body;
     const userId = req.session?.userId;
 
+    if (!userId) {
+        return res.status(401).json({
+            message: "Пользователь не авторизирован.",
+        });
+    }
+
     if (!type) {
         return res.status(400).json({
-            message: "Не орпделено действие",
+            message: "Не определено действие",
         });
     }
     //

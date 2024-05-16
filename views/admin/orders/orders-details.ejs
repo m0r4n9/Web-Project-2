@@ -6,36 +6,40 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <%- include("../../fonts/Roboto"); %>
-    <link rel="stylesheet" href="/css/admin/products/product-details.css">
-    <title><%= brand?.name; %></title>
+    <link rel="stylesheet" href="/css/admin/orders/order-details.css">
+    <title>Покупка от<%= order.date.toLocaleDateString("ru-RU"); %></title>
 </head>
 <body>
 <div class="wrapper">
     <div class="back">
-        <a href="/admin/brands">< Вернуться назад</a>
+        <a href="/admin/orders">< Вернуться назад</a>
     </div>
     <div class="title">
         <h1>
-            Компания
-            <%= brand.name; %>
+            Покупка от
+            <%= order.date.toLocaleDateString("ru-RU") %>
         </h1>
         <div class="product__id">
-            Индификатор компании:
-            <span> <%= brand.id; %></span>
+            Индификатор покупки:
+            <span> <%= order.id; %></span>
         </div>
     </div>
 
     <div class="content">
         <div class="content__block">
             <form class="form-information">
-                <input type="hidden" id="brand-id" name="brandId" value="<%= brand.id; %>">
+                <input type="hidden" id="category-id" name="categoryId" value="<%= order.id; %>">
                 <div class="information">
                     <div class="information__item">
-                        <label for="brand-name">
-                            Название компании
+                        <label for="order-status">
+                            Статуст заказа
                         </label>
-                        <input type="text" id="brand-name" name="name" value="<%= brand.name; %>"
-                               class="information__input">
+                        <select name="status" id="order-status">
+                            <option value="PENDING">В ожидании</option>
+                            <option value="DELIVERED">Доставлено</option>
+                            <option value="CANCELED">Отменено</option>
+                            <option value="COMPLETED">Завершено</option>
+                        </select>
                     </div>
                 </div>
 
@@ -44,14 +48,22 @@
                         <button disabled class="information__save-btn">Сохранить</button>
                         <button type="button" disabled class="information__cancel-btn">Отменить</button>
                     </div>
-                    <button type="button" class="information__remove-btn">Удалить товар</button>
+                    <button type="button" class="information__remove-btn">Удалить</button>
                 </div>
             </form>
         </div>
 
-
         <div class="content__block">
-            <a href="/admin/products?brandId=<%= brand.id %>">Посмотреть товары этого бренда.</a>
+            <div class="products__title">Список товаров</div>
+            <div class="products__list">
+                <% for (const item of items) { %>
+                    <div class="list__item">
+                        <div class="item__name">Название: <%= item.product_name %></div>
+                        <div class="item__price">Цена: <%= item.product_price %></div>
+                        <div class="item__quantity">Кол-во: <%= item.quantity %></div>
+                    </div>
+                <% } %>
+            </div>
         </div>
     </div>
 </div>
@@ -69,13 +81,14 @@
 
         $form.submit(function(e) {
             e.preventDefault();
-            const brandId = $("#brand-id").val();
+            const categoryId = $("#category-id").val();
+
 
             $.ajax({
-                url: `/api/admin/brands/${brandId}`,
+                url: `/api/admin/categories/${categoryId}`,
                 method: "PUT",
                 data: $(this).serialize(),
-                success: (res) => {
+                success: () => {
                     $(".information__edit").children("button").each(function() {
                         $(this).prop("disabled", true);
                     });
@@ -95,14 +108,14 @@
         });
 
         $(".information__remove-btn").on("click", function() {
-            if (window.confirm("Вы точно хотите удалить эту компанию?")) {
-                const brandId = $("#brand-id").val();
+            if (window.confirm("Вы точно хотите удалить эту категорию?")) {
+                const categoryId = $("#category-id").val();
 
                 $.ajax({
-                    url: `/api/admin/brands/${brandId}`,
+                    url: `/api/admin/categories/${categoryId}`,
                     method: "DELETE",
                 }).done(() => {
-                    window.location.replace("/admin/brands");
+                    window.location.replace("/admin/categories");
                 }).fail((jqXHR) => {
                     if (jqXHR.status === 400) {
                         window.alert(jqXHR.responseJSON.message);
@@ -110,9 +123,9 @@
                     if (jqXHR.status === 500) {
                         window.alert("Ошибка на стороне сервера. Повторите попытку.");
                     }
-                })
+                });
             }
-        })
+        });
     });
 </script>
 </body>

@@ -1,0 +1,64 @@
+@import "reset.css";
+@import "./components/header.css";
+
+.wrapper {
+}
+
+.orders {
+    width: 60vw;
+    margin: 20px auto 0;
+}
+
+.orders__title {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.order {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.order__info {
+    margin-bottom: 10px;
+}
+
+.order__info p {
+    margin: 0;
+}
+
+.order__info span {
+    font-weight: bold;
+}
+
+.order__items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+}
+
+.item__name,
+.item__price,
+.item__size {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.item__name {
+    font-weight: bold;
+}
+
+.item__price {
+    text-align: center;
+}
+
+.item__size {
+    text-align: right;
+}

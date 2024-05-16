@@ -10,10 +10,15 @@
     width: 25%;
 }
 
-.admin-panel__cell--category {
+.admin-panel__cell--email {
     width: 30%;
 }
 
-.admin-panel__cell--price {
-    width: 30%;
+.admin-panel__cell--isAdmin {
+    width: 10%;
+    text-align: center;
+}
+
+.admin-panel__cell--date {
+    width: 15%;
 }

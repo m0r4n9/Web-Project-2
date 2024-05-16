@@ -29,10 +29,14 @@
                             day: "numeric"
                         }); %></span></p>
             </div>
+            <div>
+                <a href="/orders">Посмотреть историю покупок</a>
+            </div>
             <div class="profile__actions">
                 <button id="change_profile">
                     Изменить данные
                 </button>
+                <button id="logout-profile">Выйти из аккаунта?</button>
             </div>
         </div>
     </div>
@@ -106,16 +110,25 @@
                         username: $("#username").val(),
                         email: $("#email").val()
                     },
-                    success: (res) => {
-                        if (res.success) {
-                            $("#edit").remove();
-                            $("#change_profile").show();
-                            inputDisabledAttr(true);
-                        }
+                    success: () => {
+                        $("#edit").remove();
+                        $("#change_profile").show();
+                        inputDisabledAttr(true);
                     }
                 });
             }
         });
+
+        $("#logout-profile").click(function() {
+            $.ajax({
+                url: "/api/logout",
+                method: "GET"
+            }).done(() => {
+                window.location.replace("/auth");
+            }).fail((jqXHR) => {
+                console.log("Error", jqXHR);
+            })
+        })
     });
 </script>
 </body>

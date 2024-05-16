@@ -49,47 +49,39 @@ router.post("/size", (req, res) => {
         });
     }
 
-    conn.query(
-        "SELECT id FROM sizes WHERE name = ? AND product_id = ?",
-        [size, productId],
-        (err_fetch, res_fetch) => {
-            if (err_fetch) {
-                return res.status(500).json({
-                    status: "failed",
-                    message: `Error when fetch size: ${err_fetch}`,
+    conn.query("SELECT id FROM sizes WHERE name = ? AND product_id = ?", [size, productId], (err_fetch, res_fetch) => {
+        if (err_fetch) {
+            return res.status(500).json({
+                status: "failed",
+                message: `Error when fetch size: ${err_fetch}`,
+            });
+        }
+
+        if (res_fetch.length) {
+            return res.status(400).json({
+                status: "failed",
+                message: "Данный размер уже существует.",
+            });
+        } else {
+            conn.query("INSERT INTO sizes (name, product_id) VALUES (?, ?)", [size, productId], (err, result) => {
+                if (err) {
+                    return res.status(500).json({
+                        status: "failed",
+                        message: `Error when insert size: ${err}`,
+                    });
+                }
+
+                const formatedSize = formatSize(size);
+
+                return res.json({
+                    status: "success",
+                    size,
+                    formatedSize,
+                    sizeId: result.insertId,
                 });
-            }
-
-            if (res_fetch.length) {
-                return res.status(400).json({
-                    status: "failed",
-                    message: "Данный размер уже существует.",
-                });
-            } else {
-                conn.query(
-                    "INSERT INTO sizes (name, product_id) VALUES (?, ?)",
-                    [size, productId],
-                    (err, result) => {
-                        if (err) {
-                            return res.status(500).json({
-                                status: "failed",
-                                message: `Error when insert size: ${err}`,
-                            });
-                        }
-
-                        const formatedSize = formatSize(size);
-
-                        return res.json({
-                            status: "success",
-                            size,
-                            formatedSize,
-                            sizeId: result.insertId,
-                        });
-                    },
-                );
-            }
-        },
-    );
+            });
+        }
+    });
 });
 
 router.delete("/size/:sizeId", (req, res) => {
@@ -121,53 +113,45 @@ router.post("/size/inventory", (req, res) => {
     conn.query("SELECT * FROM sizes WHERE id = ?", [sizeId], (size_err, size_result) => {
         if (size_err) {
             return res.status(500).json({
-                status: "error",
                 message: `Error when fetch size: ${size_err}`,
             });
         }
 
         if (!size_result.length) {
             return res.status(400).json({
-                status: "failed",
                 message: "Размера с таким id не существует",
             });
         }
 
-        conn.query(
-            "SELECT * FROM product_inventory WHERE size_id = ?",
-            [sizeId],
-            (inventory_err, inventory_res) => {
-                if (inventory_err) {
-                    return res.status(500).json({
-                        status: "error",
-                        message: `Error when fetch product inventory: ${inventory_err}`,
-                    });
-                }
-
-                let sql_command = "";
-                if (!inventory_res.length) {
-                    sql_command = `INSERT INTO product_inventory (product_id, size_id, quantity)
-                                   VALUES (${size_result[0].product_id}, ${sizeId}, ${quantity});`;
-                } else {
-                    sql_command = `UPDATE product_inventory
-                                   SET quantity = ${quantity}
-                                   WHERE size_id = ${sizeId}; `;
-                }
-
-                conn.query(sql_command, (update_err) => {
-                    if (update_err) {
-                        return res.status(500).json({
-                            status: "error",
-                            message: `Error when update/insert inventory: ${update_err}`,
-                        });
-                    }
-
-                    return res.json({
-                        status: "success",
-                    });
+        conn.query("SELECT * FROM product_inventory WHERE size_id = ?", [sizeId], (inventory_err, inventory_res) => {
+            if (inventory_err) {
+                return res.status(500).json({
+                    message: `Error when fetch product inventory: ${inventory_err}`,
                 });
-            },
-        );
+            }
+
+            let sql_command = "";
+            if (!inventory_res.length) {
+                sql_command = `INSERT INTO product_inventory (product_id, size_id, quantity)
+                               VALUES (${size_result[0].product_id}, ${sizeId}, ${quantity});`;
+            } else {
+                sql_command = `UPDATE product_inventory
+                               SET quantity = ${quantity}
+                               WHERE size_id = ${sizeId}; `;
+            }
+
+            conn.query(sql_command, (update_err) => {
+                if (update_err) {
+                    return res.status(500).json({
+                        message: `Error when update/insert inventory: ${update_err}`,
+                    });
+                }
+
+                return res.json({
+                    updated: true,
+                });
+            });
+        });
     });
 });
 

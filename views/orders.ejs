@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <%- include("./fonts/Roboto"); %>
+    <link rel="stylesheet" href="/css/orders.css">
+    <title>История покупок</title>
+</head>
+<body>
+<div class="wrapper">
+    <%- include("components/header", { loggedIn: true }); %>
+    <div class="orders">
+        <h1 class="orders__title">История покупок</h1>
+        <div class="orders__list">
+            <%
+            function formatDate(timestamp) {
+                const date = new Date(timestamp);
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = date.getFullYear();
+
+                const formattedDay = (day < 10) ? `0${day}` : day;
+                const formattedMonth = (month < 10) ? `0${month}` : month;
+
+                return `${formattedDay}.${formattedMonth}.${year}`;
+            }
+                    for (const orderId in orders) {
+                const order = orders[orderId];
+            %>
+            <div class="order">
+                <div class="order__info">
+                    <p>Дата покупки: <span><%= formatDate(order.date); %></span></p>
+                    <p>Статус: <span><%= order.status %></span></p>
+                </div>
+                <div class="order__items">
+                    <% for (const item of order.items) { %>
+                        <div class="item__name">
+                            Название
+                            <%= item.product_name %>
+                        </div>
+                        <div class="item__price">
+                            Цена
+                            <%= item.product_price %>
+                        </div>
+                        <div class="item__size">
+                            Размер
+                            <%= formatSize(item.size_value) %>
+                        </div>
+                    <% } %>
+
+                </div>
+            </div>
+            <% } %>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

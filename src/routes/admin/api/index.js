@@ -10,6 +10,7 @@ const brandRoutes = require("./brands");
 const categoryRoute = require("./categories");
 const productRoutes = require("./product");
 const sizeRoutes = require("./size");
+const userRoutes = require("./users");
 
 const router = new Router();
 
@@ -17,6 +18,7 @@ router.use(brandRoutes);
 router.use(categoryRoute);
 router.use(productRoutes);
 router.use(sizeRoutes);
+router.use(userRoutes);
 
 router.post("/image", upload.single("image"), (req, res) => {
     if (!req.file) {

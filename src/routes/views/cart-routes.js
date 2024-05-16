@@ -1,10 +1,13 @@
 const Router = require("express");
+
 const conn = require("../../config/db");
+const requireAuth = require("../../middlewares/requireAuth");
+
 const formatSize = require("../../utils/formatSize");
 
 const router = new Router();
 
-router.get("/cart", (req, res) => {
+router.get("/cart", requireAuth, (req, res) => {
     const userId = req.session?.userId;
 
     conn.query(

@@ -8,45 +8,35 @@ const router = new Router();
 router.post("/auth", (req, res) => {
     const { email, password } = req.body;
 
-    connection.query(
-        "SELECT id, password FROM users WHERE email = ?",
-        [email],
-        (err, result) => {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
+    connection.query("SELECT id, password, isAdmin FROM users WHERE email = ?", [email], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
 
-            if (result.length === 0 || !result[0].password) {
-                return res
-                    .status(400)
-                    .json({ error: "Пользователь с таким email не найден" });
-            }
+        if (result.length === 0 || !result[0].password) {
+            return res.status(400).json({ error: "Пользователь с таким email не найден" });
+        }
 
-            bcrypt.compare(
-                password,
-                result[0].password,
-                function (compareError, compareStatus) {
-                    if (compareError) {
-                        return res
-                            .status(500)
-                            .json({ error: "Ошибка при сравнеии пароля" });
-                    }
-                    if (compareStatus) {
-                        req.session.loggedIn = true;
-                        req.session.userId = result[0].id;
-                        return res.json({
-                            success: true,
-                        });
-                    } else {
-                        return res.status(401).json({
-                            success: false,
-                            message: "Пароли не совпадают",
-                        });
-                    }
-                },
-            );
-        },
-    );
+        bcrypt.compare(password, result[0].password, function (compareError, compareStatus) {
+            if (compareError) {
+                return res.status(500).json({ error: "Ошибка при сравнеии пароля" });
+            }
+            if (compareStatus) {
+                req.session.loggedIn = true;
+                req.session.userId = result[0].id;
+                req.session.isAdmin = result[0].isAdmin;
+
+                return res.json({
+                    success: true,
+                });
+            } else {
+                return res.status(401).json({
+                    success: false,
+                    message: "Пароли не совпадают",
+                });
+            }
+        });
+    });
 });
 
 router.get("/logout", (req, res) => {
@@ -68,16 +58,12 @@ router.post("/registration", (req, res) => {
             }
 
             if (result.length > 0) {
-                return res
-                    .status(400)
-                    .json({ error: "Пользователь с таким email уже существует" });
+                return res.status(400).json({ error: "Пользователь с таким email уже существует" });
             }
 
             bcrypt.hash(password, 10, (hashErr, hashPassword) => {
                 if (hashErr) {
-                    return res
-                        .status(500)
-                        .json({ error: "Ошибка при хешировании пароля" });
+                    return res.status(500).json({ error: "Ошибка при хешировании пароля" });
                 }
 
                 connection.query(

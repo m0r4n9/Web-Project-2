@@ -85,9 +85,9 @@
             $.ajax({
                 url: "/api/order",
                 method: "POST",
-                data: {},
-            }).done((res) => {
-                console.log(res);
+            }).done(() => {
+                $(".products-list").html("");
+                window.alert("Заказ успешно оформлен");
             });
         });
     })

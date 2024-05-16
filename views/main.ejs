@@ -11,6 +11,69 @@
 <body>
 <div class="wrapper">
     <%- include("components/header", { loggedIn }); %>
+    <div class="new-products">
+        <div class="new-products__title">
+            <h1>Новые поступления</h1>
+        </div>
+        <div class="carousel">
+            <div class="carousel-viewport">
+                <div class="carousel-items">
+                    <% products.forEach(function(product) { %>
+                        <a href="/product/<%= product.id %>" class="carousel-item">
+                            <img class="item__image" src="<%= product.image %>" alt="<%= product.name %>">
+                            <div class="item__info">
+                                <h3 class="item__name"><%= product.name %></h3>
+                                <p class="item__price">Цена: <%= product.price %> руб.</p>
+                            </div>
+                        </a>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="products-sex">
+        <a href="/catalog?sex=male" class="product-man product-link">
+            <img src="/images/men_home.jpg" alt="Img Men Items">
+        </a>
+        <a href="/catalog?sex=female" class="product-woman product-link">
+            <img src="/images/women_home.jpg" alt="Img Woman Items">
+        </a>
+    </div>
+
 </div>
+
+<script src="/scripts/jquery-3.7.1.js"></script>
+<script>
+    $(document).ready(function() {
+        const $carouselItems = $(".carousel-items");
+        let currentIndex = 0;
+        const totalItems = $(".carousel-item").length;
+
+        function updateCarousel() {
+            $(".carousel-item").removeClass("active").eq(currentIndex).addClass("active");
+        }
+
+        function moveToNextItem() {
+            currentIndex = (currentIndex + 1) % totalItems;
+            updateCarousel();
+        }
+
+        $(".prev").click(function() {
+            currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+            updateCarousel();
+        });
+
+        $(".next").click(function() {
+            moveToNextItem();
+        });
+
+        setInterval(moveToNextItem, 4000);
+
+        updateCarousel();
+    });
+</script>
+
+
 </body>
 </html>
